@@ -3,12 +3,17 @@ package telemetry;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.Event;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,53 +21,63 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class TelemetryApp extends Application {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         launch(args);
     }
 
+    private Map<String, Text> textMap = new LinkedHashMap<>();
+    private Map<String, String> associations = new LinkedHashMap<>();
+
+    private void initializeAssociations() {
+        associations.put("IAS km/h", "IAS");
+        associations.put("TAS km/h", "SPD");
+        associations.put("H m", "Altitude");
+        associations.put("power 1 hp", "Power 1");
+        associations.put("thrust 1 kgs", "Thrust 1");
+    }
+
+    private Text createText(String name) {
+        Text text = new Text();
+        text.setFont(Font.font(20));
+        text.setFill(Color.BLACK);
+        text.setMouseTransparent(true);
+        text.setText(name);
+        return text;
+    }
+
     @Override
-    public void start(Stage primaryStage) throws IOException, InterruptedException {
+    public void start(Stage primaryStage) {
 
+        initializeAssociations();
 
+        associations.values().forEach(name -> textMap.put(name, createText(name)));
 
         VBox root = new VBox();
+        root.getChildren().addAll(textMap.values());
+
         Scene scene = new Scene(root);
-        root.setMouseTransparent(true);
+        scene.setFill(Color.TRANSPARENT);
+
+        primaryStage.setScene(scene);
 
         primaryStage.setAlwaysOnTop(true);
+        primaryStage.initStyle(StageStyle.TRANSPARENT);
+
         primaryStage.setTitle("TelemetryApp");
         primaryStage.setMinHeight(400);
         primaryStage.setMinWidth(200);
         primaryStage.setMaxHeight(400);
         primaryStage.setMaxWidth(200);
-        primaryStage.setScene(scene);
-
-
-        Text ias = new Text();
-        ias.setFont(Font.font(20));
-        ias.setFill(Color.BLACK);
-
-        Text spd = new Text();
-        spd.setFont(Font.font(20));
-        spd.setFill(Color.BLACK);
-
-        Text thrust = new Text();
-        thrust.setFont(Font.font(20));
-        thrust.setFill(Color.BLACK);
-
-        Text power = new Text();
-        power.setFont(Font.font(20));
-        power.setFill(Color.BLACK);
-
-        Text alt = new Text();
-        alt.setFont(Font.font(20));
-        alt.setFill(Color.BLACK);
-
-        root.getChildren().addAll(ias, spd, thrust, power, alt);
+        primaryStage.setX(200);
+        primaryStage.setY(200);
+        primaryStage.show();
 
         Task<Void> task = new Task<Void>() {
 
@@ -83,14 +98,9 @@ public class TelemetryApp extends Application {
                     con.disconnect();
                     Map<String, String> parsedData = parse(content.toString());
 
-                    Platform.runLater(() -> {
-                        ias.setText("IAS: " + parsedData.get("IAS km/h"));
-                        spd.setText("SPD: " + parsedData.get("TAS km/h"));
-                        thrust.setText("Thrust 1: " + parsedData.get("thrust 1 kgs"));
-                        power.setText("Power 1: " + parsedData.get("power 1 hp"));
-                        alt.setText("Altitude: " + parsedData.get("H m"));
-                    });
-
+                    Platform.runLater(() ->
+                        associations.forEach((key, value) ->
+                            textMap.get(value).setText(value + ": " + parsedData.get(key) + " " + key.substring(key.lastIndexOf(' ')))));
                     Thread.sleep(10);
                 }
             }
@@ -98,8 +108,6 @@ public class TelemetryApp extends Application {
         Thread th = new Thread(task);
         th.setDaemon(true);
         th.start();
-
-        primaryStage.show();
     }
 
     private Map<String, String> parse(String content) {
