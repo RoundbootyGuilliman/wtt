@@ -36,17 +36,32 @@ public class TelemetryApp extends Application {
     private Map<String, String> associations = new LinkedHashMap<>();
 
     private void initializeAssociations() {
-        associations.put("IAS km/h", "IAS");
-        associations.put("TAS km/h", "SPD");
-        associations.put("H m", "Altitude");
-        associations.put("power 1 hp", "Power 1");
-        associations.put("thrust 1 kgs", "Thrust 1");
+        //associations.put("H m", "ALT  ");
+        //associations.put("IAS km/h", "IAS  ");
+        associations.put("TAS km/h", "SPD ");
+        //associations.put("M", "MACH");
+        //associations.put("AoA deg", "AOA ");
+        //associations.put("AoS deg", "AOS ");
+        //associations.put("power 1 hp", "PWR1");
+        //associations.put("power 2 hp", "PWR2");
+        associations.put("thrust 1 kgs", "THR1");
+        associations.put("thrust 2 kgs", "THR2");
+        associations.put("RPM 1", "RPM1");
+        associations.put("RPM 2", "RPM2");
+        associations.put("Vy m/s", "CLMB");
+        associations.put("Ny", "TURN");
+        associations.put("Wx deg/s", "ROLL");
+        //associations.put("Mfuel kg", "FUEL");
+        //associations.put("Mfuel0 kg", "FLMX");
+        //associations.put("manifold pressure 1 atm", "MNFP");
+        associations.put("efficiency 1 %", "EFF ");
     }
 
     private Text createText(String name) {
         Text text = new Text();
-        text.setFont(Font.font(20));
-        text.setFill(Color.BLACK);
+        text.setFont(Font.font("Courier New", 26));
+        text.setOpacity(0.9);
+        text.setFill(Color.WHITE);
         text.setMouseTransparent(true);
         text.setText(name);
         return text;
@@ -72,11 +87,13 @@ public class TelemetryApp extends Application {
 
         primaryStage.setTitle("TelemetryApp");
         primaryStage.setMinHeight(400);
-        primaryStage.setMinWidth(200);
+        primaryStage.setWidth(400);
+        primaryStage.setHeight(400);
+        primaryStage.setMinWidth(400);
         primaryStage.setMaxHeight(400);
-        primaryStage.setMaxWidth(200);
-        primaryStage.setX(200);
-        primaryStage.setY(200);
+        primaryStage.setMaxWidth(400);
+        primaryStage.setX(30);
+        primaryStage.setY(350);
         primaryStage.show();
 
         Task<Void> task = new Task<Void>() {
@@ -100,7 +117,7 @@ public class TelemetryApp extends Application {
 
                     Platform.runLater(() ->
                         associations.forEach((key, value) ->
-                            textMap.get(value).setText(value + ": " + parsedData.get(key) + " " + key.substring(key.lastIndexOf(' ')))));
+                            textMap.get(value).setText(value + "    " + parsedData.get(key) + " " + key.substring(key.lastIndexOf(' ') + 1))));
                     Thread.sleep(10);
                 }
             }
