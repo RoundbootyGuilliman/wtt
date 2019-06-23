@@ -40,21 +40,24 @@ public class TelemetryApp extends Application {
         //associations.put("IAS km/h", "IAS  ");
         associations.put("TAS km/h", "SPD ");
         //associations.put("M", "MACH");
+        associations.put("Vy m/s", "CLMB");
+        //associations.put("Ny", "TURN");
+        //associations.put("Wx deg/s", "ROLL");
         //associations.put("AoA deg", "AOA ");
         //associations.put("AoS deg", "AOS ");
-        //associations.put("power 1 hp", "PWR1");
+        associations.put("power 1 hp", "PWR1");
         //associations.put("power 2 hp", "PWR2");
         associations.put("thrust 1 kgs", "THR1");
-        associations.put("thrust 2 kgs", "THR2");
-        associations.put("RPM 1", "RPM1");
-        associations.put("RPM 2", "RPM2");
-        associations.put("Vy m/s", "CLMB");
-        associations.put("Ny", "TURN");
-        associations.put("Wx deg/s", "ROLL");
+        //associations.put("thrust 2 kgs", "THR2");
+        //associations.put("RPM 1", "RPM1");
+        //associations.put("RPM 2", "RPM2");
+        associations.put("pitch 1 deg", "PROP");
+        associations.put("mixture 1 %", "MXTR");
+        associations.put("radiator 1 %", "RDTR");
         //associations.put("Mfuel kg", "FUEL");
         //associations.put("Mfuel0 kg", "FLMX");
         //associations.put("manifold pressure 1 atm", "MNFP");
-        associations.put("efficiency 1 %", "EFF ");
+        //associations.put("efficiency 1 %", "EFF ");
     }
 
     private Text createText(String name) {
@@ -93,7 +96,7 @@ public class TelemetryApp extends Application {
         primaryStage.setMaxHeight(400);
         primaryStage.setMaxWidth(400);
         primaryStage.setX(30);
-        primaryStage.setY(350);
+        primaryStage.setY(380);
         primaryStage.show();
 
         Task<Void> task = new Task<Void>() {
